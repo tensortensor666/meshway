@@ -7,6 +7,7 @@ pub struct Config {
     pub port: u16,
     pub database_url: String,
     pub admin_token: String,
+    pub web_dir: String,
 }
 
 impl Config {
@@ -19,11 +20,13 @@ impl Config {
         let database_url =
             env::var("MESHWAY_DATABASE_URL").unwrap_or_else(|_| "sqlite://data/meshway.db".into());
         let admin_token = env::var("MESHWAY_ADMIN_TOKEN").unwrap_or_else(|_| "change-me".into());
+        let web_dir = env::var("MESHWAY_WEB_DIR").unwrap_or_else(|_| "frontend/dist".into());
         Ok(Self {
             host,
             port,
             database_url,
             admin_token,
+            web_dir,
         })
     }
 

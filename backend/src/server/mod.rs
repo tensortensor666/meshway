@@ -9,7 +9,7 @@ use axum::{
 };
 use reqwest::Client;
 use std::sync::Arc;
-use tower_http::{cors::CorsLayer, trace::TraceLayer};
+use tower_http::{cors::CorsLayer, services::ServeDir, trace::TraceLayer};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -35,6 +35,9 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/api/admin/api-keys/{id}", put(admin::set_api_key))
         .route("/api/admin/logs", get(admin::logs))
+        .fallback_service(
+            ServeDir::new(state.config.web_dir.clone()).append_index_html_on_directories(true),
+        )
         .with_state(Arc::new(state))
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())

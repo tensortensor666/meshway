@@ -14,6 +14,7 @@ enum UserEvent {
     Tray(TrayIconEvent),
 }
 
+#[allow(deprecated)]
 pub fn run(url: String) -> Result<()> {
     let event_loop = EventLoop::<UserEvent>::with_user_event()
         .build()

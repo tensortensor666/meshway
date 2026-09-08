@@ -179,7 +179,7 @@ impl Database {
                 .fetch_one(&self.pool)
                 .await?;
         let (latency,): (f64,) =
-            sqlx::query_as("SELECT COALESCE(AVG(latency_ms), 0) FROM request_logs")
+            sqlx::query_as("SELECT COALESCE(AVG(CAST(latency_ms AS REAL)), 0.0) FROM request_logs")
                 .fetch_one(&self.pool)
                 .await?;
         Ok(

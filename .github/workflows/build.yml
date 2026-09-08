@@ -1,0 +1,66 @@
+name: Build Meshway
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Build admin frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meshway-admin
+          path: frontend/dist
+
+  linux:
+    name: Build Linux binary
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meshway-linux-x64
+          path: backend/target/release/meshway
+
+  windows:
+    name: Build Windows binary
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meshway-windows-x64
+          path: backend/target/release/meshway.exe

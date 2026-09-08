@@ -1,3 +1,5 @@
+#![cfg_attr(windows, windows_subsystem = "windows")]
+
 mod api;
 mod auth;
 mod config;
@@ -6,6 +8,8 @@ mod error;
 mod logger;
 mod provider;
 mod server;
+#[cfg(windows)]
+mod windows_tray;
 
 use anyhow::Result;
 use config::Config;
@@ -32,6 +36,18 @@ async fn main() -> Result<()> {
     let app = server::router(state);
     let listener = tokio::net::TcpListener::bind(config.address()).await?;
     tracing::info!(address = %config.address(), "Meshway listening");
+
+    #[cfg(windows)]
+    {
+        let url = format!("http://{}", config.address());
+        let server = tokio::spawn(async move { axum::serve(listener, app).await });
+        windows_tray::run(url)?;
+        server.abort();
+        let _ = server.await;
+    }
+
+    #[cfg(not(windows))]
     axum::serve(listener, app).await?;
+
     Ok(())
 }

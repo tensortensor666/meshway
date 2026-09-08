@@ -24,3 +24,11 @@ tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1", features = ["serde", "v4"] }
+
+[target.'cfg(windows)'.dependencies]
+open = "5"
+tray-icon = { version = "0.24", default-features = false }
+winit = { version = "0.30", default-features = false }
+
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"

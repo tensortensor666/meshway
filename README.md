@@ -6,6 +6,8 @@ Meshway 是一个本地运行的 AI API Gateway，将 OpenAI Chat Completions、
 
 普通用户无需安装 Rust 或 Node.js。Windows 下载 CI 生成的 `Meshway-Setup.exe` 安装；Linux 下载 `.deb` 后使用系统包管理器安装。安装包已包含管理后台，运行后访问 `http://127.0.0.1:8080/`。首次使用请将 Admin Token 设置为自定义值，不要继续使用默认的 `change-me`。
 
+Windows 版本启动时不会显示终端窗口，会自动打开管理页面并常驻系统托盘。双击托盘图标或使用托盘菜单可以重新打开管理页面；选择“退出 Meshway”会停止本地服务。
+
 前端开发环境运行：
 
 ```bash

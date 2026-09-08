@@ -1,5 +1,8 @@
 use anyhow::{Context, Result};
-use std::{env, net::SocketAddr, path::PathBuf};
+use std::{env, net::SocketAddr};
+
+#[cfg(target_os = "windows")]
+use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
 pub struct Config {

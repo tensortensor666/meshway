@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+if ! getent group meshway >/dev/null; then
+    addgroup --system meshway
+fi
+if ! getent passwd meshway >/dev/null; then
+    adduser --system --ingroup meshway --home /var/lib/meshway --no-create-home meshway
+fi
+install -d -o meshway -g meshway /var/lib/meshway/data
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload || true
+    systemctl enable meshway.service || true
+    systemctl restart meshway.service || true
+fi

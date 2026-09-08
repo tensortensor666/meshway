@@ -1,0 +1,10 @@
+Package: meshway
+Version: @VERSION@
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Meshway contributors
+Depends: libc6 (>= 2.31)
+Description: Local AI API gateway
+ Meshway provides OpenAI and Anthropic compatible API endpoints,
+ local access-key management and a web administration console.

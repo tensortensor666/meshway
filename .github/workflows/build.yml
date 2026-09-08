@@ -28,8 +28,9 @@ jobs:
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
-          name: meshway-admin
+          name: meshway-admin-build
           path: frontend/dist
+          retention-days: 1
 
   linux:
     name: Build Linux binary
@@ -45,18 +46,26 @@ jobs:
           toolchain: stable
       - uses: actions/download-artifact@v4
         with:
-          name: meshway-admin
+          name: meshway-admin-build
           path: frontend/dist
       - run: cargo build --release
       - run: |
-          mkdir -p release/meshway-linux-x64/frontend
-          cp target/release/meshway release/meshway-linux-x64/meshway
-          cp -r ../frontend/dist release/meshway-linux-x64/frontend/dist
-          tar -czf meshway-linux-x64.tar.gz -C release meshway-linux-x64
+          VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)
+          PACKAGE="package/meshway_${VERSION}_amd64"
+          install -d "$PACKAGE/DEBIAN" "$PACKAGE/usr/bin" "$PACKAGE/usr/share/meshway/frontend" "$PACKAGE/etc/meshway" "$PACKAGE/lib/systemd/system"
+          install -m 755 target/release/meshway "$PACKAGE/usr/bin/meshway"
+          cp -r ../frontend/dist "$PACKAGE/usr/share/meshway/frontend/dist"
+          sed "s/@VERSION@/$VERSION/" ../packaging/linux/control > "$PACKAGE/DEBIAN/control"
+          install -m 755 ../packaging/linux/postinst "$PACKAGE/DEBIAN/postinst"
+          install -m 755 ../packaging/linux/prerm "$PACKAGE/DEBIAN/prerm"
+          install -m 755 ../packaging/linux/postrm "$PACKAGE/DEBIAN/postrm"
+          install -m 644 ../packaging/linux/meshway.env "$PACKAGE/etc/meshway/meshway.env"
+          install -m 644 ../packaging/linux/meshway.service "$PACKAGE/lib/systemd/system/meshway.service"
+          dpkg-deb --build --root-owner-group "$PACKAGE" "meshway_${VERSION}_amd64.deb"
       - uses: actions/upload-artifact@v4
         with:
-          name: meshway-linux-x64
-          path: backend/meshway-linux-x64.tar.gz
+          name: meshway-linux-deb
+          path: backend/meshway_*_amd64.deb
 
   windows:
     name: Build Windows binary
@@ -72,15 +81,13 @@ jobs:
           toolchain: stable
       - uses: actions/download-artifact@v4
         with:
-          name: meshway-admin
+          name: meshway-admin-build
           path: frontend/dist
       - run: cargo build --release
       - run: |
-          New-Item -ItemType Directory -Force release\meshway-windows-x64\frontend | Out-Null
-          Copy-Item target\release\meshway.exe release\meshway-windows-x64\meshway.exe
-          Copy-Item ..\frontend\dist release\meshway-windows-x64\frontend\dist -Recurse
-          Compress-Archive -Path release\meshway-windows-x64 -DestinationPath meshway-windows-x64.zip -Force
+          choco install innosetup --no-progress -y
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "${env:GITHUB_WORKSPACE}\packaging\windows\meshway.iss"
       - uses: actions/upload-artifact@v4
         with:
-          name: meshway-windows-x64
-          path: backend/meshway-windows-x64.zip
+          name: meshway-windows-installer
+          path: installer-output/Meshway-Setup.exe

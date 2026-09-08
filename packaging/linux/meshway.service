@@ -1,0 +1,19 @@
+[Unit]
+Description=Meshway AI API Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=meshway
+Group=meshway
+EnvironmentFile=/etc/meshway/meshway.env
+WorkingDirectory=/var/lib/meshway
+ExecStart=/usr/bin/meshway
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

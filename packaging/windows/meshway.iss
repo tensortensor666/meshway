@@ -1,5 +1,5 @@
 #define MyAppName "Meshway"
-#define MyAppVersion "0.1.1"
+#define MyAppVersion "0.1.2"
 #define MyAppPublisher "Meshway contributors"
 #define MyAppExeName "meshway.exe"
 

@@ -6,6 +6,7 @@ mod config;
 mod database;
 mod error;
 mod logger;
+mod newapi;
 mod provider;
 mod server;
 #[cfg(windows)]

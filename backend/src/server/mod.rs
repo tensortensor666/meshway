@@ -26,6 +26,10 @@ pub fn router(state: AppState) -> Router {
         .route("/v1/messages", post(proxy::messages))
         .route("/api/admin/stats", get(admin::stats))
         .route(
+            "/api/admin/providers/newapi/test",
+            post(admin::inspect_newapi),
+        )
+        .route(
             "/api/admin/providers",
             get(admin::providers).post(admin::save_provider),
         )

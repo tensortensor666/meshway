@@ -2,6 +2,7 @@ use crate::{
     auth,
     database::{ApiKeyRecord, Database, LogRecord, ProviderRecord},
     error::ApiError,
+    newapi::{self, NewApiInput, NewApiInspection},
     server::AppState,
 };
 use axum::{
@@ -39,6 +40,15 @@ pub struct CreatedKey {
 
 fn default_enabled() -> bool {
     true
+}
+
+pub async fn inspect_newapi(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    Json(input): Json<NewApiInput>,
+) -> Result<Json<NewApiInspection>, ApiError> {
+    require_admin(&headers, &state)?;
+    Ok(Json(newapi::inspect(&state.http_client, input).await?))
 }
 
 fn require_admin(headers: &HeaderMap, state: &AppState) -> Result<(), ApiError> {

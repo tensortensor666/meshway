@@ -18,6 +18,8 @@ npm run dev
 
 后台使用 `MESHWAY_ADMIN_TOKEN` 访问 `/api/admin/*`。先添加 Provider，再创建一个 `mw_` 开头的访问 Key。访问 Key 只在创建成功时明文返回一次，数据库仅保存 SHA-256 哈希。
 
+在 Provider 页面可以使用“NewAPI 一键导入”：粘贴包含 `_type`、`key`、`url` 的渠道连接 JSON，或填写 NewAPI 地址和 Key。Meshway 会读取 `/v1/models`，并探测 Chat Completions、Responses、Anthropic Messages 是否可用；探测不会发送聊天请求，确认后可一键保存 Provider。
+
 ## API
 
 调用兼容接口时使用：
@@ -46,7 +48,7 @@ Provider 的 `base_url` 应填写 API 根地址，例如 `https://api.openai.com
 Linux 安装后由 systemd 管理服务，配置文件位于 `/etc/meshway/meshway.env`，数据库位于 `/var/lib/meshway/data/meshway.db`。Windows 安装后程序和前端位于用户本地应用目录，数据库默认位于 `%LOCALAPPDATA%\Meshway\data\meshway.db`。
 
 ```bash
-sudo dpkg -i meshway_0.1.0_amd64.deb
+sudo dpkg -i meshway_0.1.2_amd64.deb
 sudo systemctl status meshway
 ```
 
